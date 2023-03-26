@@ -7,7 +7,8 @@ Created on Fri Mar 24 17:27:12 2023
 import csv
 import math
 
-PATH=r'.\resources\budget_data.csv'
+IMPORTPATH=r'.\resources\budget_data.csv'
+EXPORTPATH=r'.\analysis\analysis.txt'
 
 class App:
     def __init__(self):
@@ -17,12 +18,13 @@ class App:
         
         self.get_file()
         self.compute()
+        self.export()
         
         # for l in self.data:
         #     print(l)
 
     def get_file(self):
-        with open(PATH,newline='') as fobj:
+        with open(IMPORTPATH,newline='') as fobj:
             csvreader=csv.reader(fobj)
             for row in csvreader:
                 self.data+=[row]
@@ -48,10 +50,21 @@ class App:
                 self.stats['greatest decrease']=tup
             elif ch<self.stats['greatest decrease'][1]:
                 self.stats['greatest decrease']=tup
-        # self.stats['greatest increase']=max(self.changes)
-        # self.stats['greatest decrease']=min(self.changes)
         print(self.stats)
 
+    def export(self):
+        exportlist=[]
+        exportlist+=['Financial Analysis']
+        exportlist+=['-'*30]
+        exportlist+=['Total Months: %s'%self.stats['total number of months']]
+        exportlist+=['Total: $%s'%self.stats['net profit/loss']]
+        exportlist+=['Average Change: $%s'%self.stats['average change']]
+        exportlist+=['Greatest Increase in Profits: %s ($%s)'%(self.stats['greatest increase'][0],self.stats['greatest increase'][1])]
+        exportlist+=['Greatest Decrease in Profits: %s ($%s)'%(self.stats['greatest decrease'][0],self.stats['greatest decrease'][1])]
+        exportlist=[x+'\n\n' for x in exportlist]
+        with open(EXPORTPATH,'w') as fobj:
+            fobj.writelines(exportlist)
+        print('done.')
 
 
 if __name__=='__main__':
