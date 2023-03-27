@@ -6,8 +6,19 @@ Created on Fri Mar 24 17:27:12 2023
 """
 import csv
 
-IMPORTPATH=r'.\resources\election_data.csv'
-EXPORTPATH=r'.\analysis\analysis.txt'
+#this always worked before
+# IMPORTPATH=r'.\resources\election_data.csv'
+# EXPORTPATH=r'.\analysis\analysis.txt'
+
+#i adjusted things.  hopefully this works.  i think the 
+#directory structure is to spec
+IMPORTPATH=r'resources\election_data.csv'
+EXPORTPATH=r'analysis\analysis.txt'
+import os
+pth=os.getcwd()
+import os.path
+IMPORTPATH=os.path.join(pth,IMPORTPATH)
+EXPORTPATH=os.path.join(pth,EXPORTPATH)
 
 class App:
     def __init__(self):
@@ -33,14 +44,24 @@ class App:
         '''this function performs all computations and saves those to self.stats'''
         self.stats['total votes']=len(self.data)
         self.stats['by candidate']={}
-        total_votes=0
-        for i in range(0,len(self.data)):
+        #
+        self.count_votes_by_candidate()
+        self.compute_vote_percentages()
+        self.find_the_winner()
+    
+    def count_votes_by_candidate(self):
+        for i in range(0,len(self.data)): 
             ballot,county,candidate=self.data[i]
             if not candidate in self.stats['by candidate']:#setup a new key if needed
-                self.stats['by candidate'][candidate]=[0,0]
-            total_votes+=1
-            self.stats['by candidate'][candidate][1]+=1
-            self.stats['by candidate'][candidate][0]=self.stats['by candidate'][candidate][1]/total_votes
+                self.stats['by candidate'][candidate]=[0,0] #this means [percentage,votes]
+            self.stats['by candidate'][candidate][1]+=1  
+        
+    def compute_vote_percentages(self):
+        #compute vote percentages
+        for k in self.stats['by candidate']: #
+            self.stats['by candidate'][k][0]=self.stats['by candidate'][k][1]/self.stats['total votes']
+        
+    def find_the_winner(self):
         #find the winner
         summary=[(self.stats['by candidate'][x][1],x) for x in self.stats['by candidate']]
         summary.sort(reverse=True)

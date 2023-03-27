@@ -6,8 +6,19 @@ Created on Fri Mar 24 17:27:12 2023
 """
 import csv
 
-IMPORTPATH=r'.\resources\budget_data.csv'
-EXPORTPATH=r'.\analysis\analysis.txt'
+#this always worked before
+# IMPORTPATH=r'.\resources\budget_data.csv'
+# EXPORTPATH=r'.\analysis\analysis.txt'
+
+#i adjusted things.  hopefully this works.  i think the 
+#directory structure is to spec
+IMPORTPATH=r'resources\budget_data.csv'
+EXPORTPATH=r'analysis\analysis.txt'
+import os
+pth=os.getcwd()
+import os.path
+IMPORTPATH=os.path.join(pth,IMPORTPATH)
+EXPORTPATH=os.path.join(pth,EXPORTPATH)
 
 class App:
     def __init__(self):
@@ -35,9 +46,10 @@ class App:
         '''
         self.stats['total number of months']=len(self.data)
         self.stats['net profit/loss']=sum([int(x[1]) for x in self.data])
-        for i in range(0,len(self.data)):#populate a list of changes for use below
+        for i in range(1,len(self.data)):#populate a list of changes for use below
             self.changes+=[(self.data[i][0],int(self.data[i][1])-int(self.data[i-1][1]))]
-        self.stats['average change']=round(sum([x[1] for x in self.changes])/len(self.changes),2)
+        self.stats['sum of changes']=sum([x[1] for x in self.changes])
+        self.stats['average change']=round(self.stats['sum of changes']/len(self.changes),2)
         
         #search through the list of changes for greatest increase/decrease
         self.stats['greatest increase']=self.stats['greatest decrease']=None
